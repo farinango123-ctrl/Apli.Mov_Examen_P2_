@@ -1,4 +1,5 @@
 package com.example.techaudit20
+
 import android.os.Build
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -11,7 +12,9 @@ import androidx.lifecycle.lifecycleScope
 import com.example.techaudit20.databinding.ActivityAddEditBinding
 import com.example.techaudit20.model.AuditItem
 import com.example.techaudit20.model.AuditStatus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.UUID
 
@@ -26,7 +29,7 @@ class AddEditActivity : AppCompatActivity() {
         binding = ActivityAddEditBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -52,6 +55,9 @@ class AddEditActivity : AppCompatActivity() {
             binding.spEstado.setSelection(posicion)
 
             binding.btnGuardar.text = "Actualizar Registro"
+            title = "Editar Equipo"
+        } ?: run {
+            title = "Nuevo Registro"
         }
 
         binding.btnGuardar.setOnClickListener {
@@ -78,9 +84,11 @@ class AddEditActivity : AppCompatActivity() {
 
         val estadoSeleccionado = binding.spEstado.selectedItem as AuditStatus
 
-        // Si estamos editando, usamos el mismo ID. Si es nuevo, generamos uno.
+        // Si estamos editando, usamos el mismo ID y labId. Si es nuevo, generamos uno.
         val id = itemAEditar?.id ?: UUID.randomUUID().toString()
         val fecha = itemAEditar?.fechaRegistro ?: Date().toString()
+        // Importante: Si es nuevo, necesitamos un labId por defecto o manejarlo.
+        val labId = itemAEditar?.laboratorioId ?: "LAB_GENERAL"
 
         val itemAGuardar = AuditItem(
             id = id,
@@ -88,18 +96,24 @@ class AddEditActivity : AppCompatActivity() {
             ubicacion = ubicacion,
             fechaRegistro = fecha,
             estado = estadoSeleccionado,
-            notas = notas
+            notas = notas,
+            laboratorioId = labId
         )
 
-        // Corregido el cast a TechAuditApp
         val app = application as? TechAuditApp
         val database = app?.database
 
         if (database != null) {
             lifecycleScope.launch {
-                database.auditDao().insert(itemAGuardar)
-                Toast.makeText(this@AddEditActivity, "¡Guardado!", Toast.LENGTH_SHORT).show()
-                finish()
+                try {
+                    withContext(Dispatchers.IO) {
+                        database.auditDao().insert(itemAGuardar)
+                    }
+                    Toast.makeText(this@AddEditActivity, "¡Guardado!", Toast.LENGTH_SHORT).show()
+                    finish()
+                } catch (e: Exception) {
+                    Toast.makeText(this@AddEditActivity, "Error al guardar: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             }
         } else {
             Toast.makeText(this, "Error: No se pudo acceder a la base de datos", Toast.LENGTH_SHORT).show()

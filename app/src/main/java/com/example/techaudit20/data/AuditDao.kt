@@ -36,4 +36,7 @@ interface AuditDao {
     // Borrar todo (util para pruebas)
     @Query("DELETE FROM equipos")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM equipos WHERE laboratorioId = :labId")
+    fun getEquiposByLab(labId: String): Flow<List<AuditItem>>
 }
