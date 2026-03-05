@@ -11,9 +11,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.techauditoria.adapter.AuditAdapter
-import com.example.techauditoria.databinding.ActivityMainBinding
-import com.example.techauditoria.uil.AuditViewModel
+import com.example.techaudit20.adapter.AuditAdapter
+import com.example.techaudit20.databinding.ActivityMainBinding
+import com.example.techaudit20.uil.AuditViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,17 +27,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
         setupRecyclerView()
-        configurararDeslizarParaBorrar()
+        setupSwipeToDelete()
 
         viewModel.allItems.observe(this) { listaActualizada ->
-            adapter.actualizarLista(listaActualizada)
+            adapter.submitList(listaActualizada)
         }
 
         binding.fabAgregar.setOnClickListener {
@@ -47,10 +47,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        // Al hacer clic, enviamos a AddEditActivity para EDITAR el equipo
-        adapter = AuditAdapter(mutableListOf()) { itemSeleccionndo ->
-            val intent = Intent(this, AddEditActivity::class.java)
-            intent.putExtra("EXTRA_ITEM", itemSeleccionndo)
+        // Al hacer clic, enviamos a DetailActivity para ver el equipo
+        adapter = AuditAdapter { itemSeleccionado ->
+            val intent = Intent(this, DetailActivity::class.java)
+            intent.putExtra("EXTRA_ITEM", itemSeleccionado)
             startActivity(intent)
         }
 
@@ -58,28 +58,24 @@ class MainActivity : AppCompatActivity() {
         binding.rvAuditoria.layoutManager = LinearLayoutManager(this)
     }
 
-    private fun configurararDeslizarParaBorrar() {
+    private fun setupSwipeToDelete() {
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
+            ): Boolean = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    // Ahora podemos usar .listaAuditoria porque ya no es privada en el Adapter
-                    val item = adapter.listaAuditoria[position]
+                    val item = adapter.currentList[position]
                     viewModel.delete(item)
-                    Toast.makeText(this@MainActivity, "Equipo eliminado", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "${item.nombre} eliminado", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(binding.rvAuditoria)
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvAuditoria)
     }
 }
