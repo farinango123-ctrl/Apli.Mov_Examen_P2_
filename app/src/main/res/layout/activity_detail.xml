@@ -13,10 +13,10 @@
         android:id="@+id/viewHeaderStatus"
         android:layout_width="match_parent"
         android:layout_height="180dp"
-        android:background="@color/design_default_color_primary"
+        android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardInfo"
@@ -28,7 +28,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toTopOf="@+id/viewHeaderStatus"
+        app:layout_constraintTop_toTopOf="@+id/viewHeaderStatus"
         app:layout_constraintVertical_bias="0.3">
 
         <LinearLayout
@@ -126,6 +126,6 @@
         android:text="Cerrar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toBottomOf="@+id/cardInfo" />
+        app:layout_constraintTop_toBottomOf="@+id/cardInfo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

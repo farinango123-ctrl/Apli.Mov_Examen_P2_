@@ -47,7 +47,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        // Al hacer clic, enviamos a DetailActivity para ver el equipo
         adapter = AuditAdapter { itemSeleccionado ->
             val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("EXTRA_ITEM", itemSeleccionado)

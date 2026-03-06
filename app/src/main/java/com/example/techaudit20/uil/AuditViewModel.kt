@@ -28,7 +28,13 @@ class AuditViewModel(application: Application) : AndroidViewModel(application) {
         // Creamos un laboratorio por defecto si no existe para evitar errores de ForeignKey
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                labDao.insert(Laboratorio(id = "LAB_GENERAL", nombre = "Laboratorio General"))
+                labDao.insert(
+                    Laboratorio(
+                        id = "LAB_GENERAL",
+                        nombre = "Laboratorio General",
+                        edificio = "Edificio Central"
+                    )
+                )
             }
         }
     }
