@@ -13,7 +13,14 @@ interface LaboratorioDao {
     @Query("SELECT * FROM laboratorios")
     fun getAllLabs(): Flow<List<Laboratorio>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)suspend fun insert(lab: Laboratorio)
+    @Query("SELECT * FROM laboratorios")
+    suspend fun getAllLabsSync(): List<Laboratorio>
+
+    @Query("SELECT * FROM laboratorios WHERE id = :id")
+    suspend fun getLabById(id: String): Laboratorio?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(lab: Laboratorio)
 
     @Delete
     suspend fun delete(lab: Laboratorio)

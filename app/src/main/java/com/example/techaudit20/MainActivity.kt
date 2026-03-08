@@ -2,23 +2,27 @@ package com.example.techaudit20
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.techaudit20.adapter.AuditAdapter
+import com.example.techaudit20.adapter.LaboratorioAdapter
 import com.example.techaudit20.databinding.ActivityMainBinding
+import com.example.techaudit20.model.Laboratorio
 import com.example.techaudit20.uil.AuditViewModel
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var adapter: AuditAdapter
+    private lateinit var adapter: LaboratorioAdapter
     private val viewModel: AuditViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,47 +38,68 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupRecyclerView()
-        setupSwipeToDelete()
 
-        viewModel.allItems.observe(this) { listaActualizada ->
-            adapter.submitList(listaActualizada)
+        // Observar laboratorios
+        viewModel.allLabs.observe(this) { listaLabs ->
+            adapter.submitList(listaLabs)
         }
 
-        binding.fabAgregar.setOnClickListener {
-            val intent = Intent(this, AddEditActivity::class.java)
-            startActivity(intent)
-        }
-    }
-
-    private fun setupRecyclerView() {
-        adapter = AuditAdapter { itemSeleccionado ->
-            val intent = Intent(this, DetailActivity::class.java)
-            intent.putExtra("EXTRA_ITEM", itemSeleccionado)
-            startActivity(intent)
+        // Botón para sincronizar con la nube
+        binding.btnSincronizar.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+            viewModel.sincronizarConNube()
         }
 
-        binding.rvAuditoria.adapter = adapter
-        binding.rvAuditoria.layoutManager = LinearLayoutManager(this)
-    }
-
-    private fun setupSwipeToDelete() {
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean = false
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val item = adapter.currentList[position]
-                    viewModel.delete(item)
-                    Toast.makeText(this@MainActivity, "${item.nombre} eliminado", Toast.LENGTH_SHORT).show()
-                }
+        // Observar estado de sincronización
+        viewModel.syncStatus.observe(this) { exito ->
+            binding.progressBar.visibility = View.GONE
+            if (exito == true) {
+                Toast.makeText(this, "¡Sincronización Exitosa con MockAPI!", Toast.LENGTH_LONG).show()
+            } else if (exito == false) {
+                Toast.makeText(this, "Error de conexión con la nube", Toast.LENGTH_SHORT).show()
             }
         }
 
-        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvAuditoria)
+        // Botón para agregar laboratorio (Entidad 1)
+        binding.fabAddLab.setOnClickListener {
+            mostrarDialogoNuevoLab()
+        }
+    }
+
+    private fun mostrarDialogoNuevoLab() {
+        val view = LayoutInflater.from(this).inflate(R.layout.dialog_add_lab, null)
+        val etNombre = view.findViewById<EditText>(R.id.etNombreLab)
+        val etEdificio = view.findViewById<EditText>(R.id.etEdificioLab)
+
+        AlertDialog.Builder(this)
+            .setTitle("Nuevo Laboratorio")
+            .setView(view)
+            .setPositiveButton("Guardar") { _, _ ->
+                val nombre = etNombre.text.toString()
+                val edificio = etEdificio.text.toString()
+                if (nombre.isNotBlank() && edificio.isNotBlank()) {
+                    val nuevoLab = Laboratorio(
+                        id = UUID.randomUUID().toString(),
+                        nombre = nombre,
+                        edificio = edificio
+                    )
+                    viewModel.insertLab(nuevoLab)
+                } else {
+                    Toast.makeText(this, "Completa los campos", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun setupRecyclerView() {
+        adapter = LaboratorioAdapter { labSeleccionado ->
+            val intent = Intent(this, AuditListActivity::class.java)
+            intent.putExtra("EXTRA_LAB_ID", labSeleccionado.id)
+            startActivity(intent)
+        }
+
+        binding.rvLaboratorios.adapter = adapter
+        binding.rvLaboratorios.layoutManager = LinearLayoutManager(this)
     }
 }

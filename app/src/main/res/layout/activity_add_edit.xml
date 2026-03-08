@@ -1,80 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
+    android:background="#F5F5F5"
     tools:context=".AddEditActivity">
 
     <TextView
-        android:text="Nuevo Registro"
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registro de Equipo"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="24dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="24dp" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilNombre"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre del Equipo (Ej: Laptop HP)">
+        android:hint="Nombre del Equipo">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etNombre"
-            android:inputType="textCapWords"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilUbicacion"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Ubicación (Ej: Lab 1)">
+        android:hint="Ubicación Detallada">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etUbicacion"
-            android:inputType="textCapSentences"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
-        android:text="Estado del Equipo:"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="8dp"
+        android:id="@+id/tvLabLabel"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Asignar a Laboratorio:"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <Spinner
+        android:id="@+id/spLaboratorio"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvEstadoLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Estado Actual:"
+        android:textStyle="bold" />
 
     <Spinner
         android:id="@+id/spEstado"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@android:drawable/btn_dropdown"/>
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:background="@android:drawable/btn_dropdown" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilNotas"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:hint="Notas Adicionales">
+        android:layout_marginTop="16dp"
+        android:hint="Notas de Auditoría">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etNotas"
-            android:inputType="textMultiLine"
-            android:minLines="3"
-            android:gravity="top"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:lines="3" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btnGuardar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Guardar Registro"
+        android:layout_height="56dp"
         android:layout_marginTop="32dp"
-        android:backgroundTint="#2196F3"/>
+        android:text="Guardar Equipo" />
 
 </LinearLayout>

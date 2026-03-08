@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 import com.example.techaudit20.model.AuditItem
 import com.example.techaudit20.model.Laboratorio
 
-@Database(entities = [AuditItem::class, Laboratorio::class], version = 2, exportSchema = false)
+@Database(entities = [AuditItem::class, Laboratorio::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AuditDatabase : RoomDatabase() {
     abstract fun auditDao(): AuditDao
@@ -25,7 +25,7 @@ abstract class AuditDatabase : RoomDatabase() {
                     AuditDatabase::class.java,
                     "techaudit_database"
                 )
-                .fallbackToDestructiveMigration() // Útil durante el desarrollo si cambias el esquema
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance

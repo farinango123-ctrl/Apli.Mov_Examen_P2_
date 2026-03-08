@@ -13,9 +13,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AuditDao {
 
-    // Traer todos los equipos ordenados por fecha
+    // Traer todos los equipos ordenados por fecha para UI
     @Query("SELECT * FROM equipos ORDER BY fechaRegistro DESC")
     fun getAllItems(): Flow<List<AuditItem>>
+
+    // Traer todos los equipos de forma síncrona para Retrofit
+    @Query("SELECT * FROM equipos")
+    suspend fun getAllEquiposSync(): List<AuditItem>
 
     // Buscar uno solo por ID
     @Query("SELECT * FROM equipos WHERE id = :id")
@@ -33,7 +37,7 @@ interface AuditDao {
     @Delete
     suspend fun delete(item: AuditItem)
 
-    // Borrar todo (util para pruebas)
+    // Borrar todo
     @Query("DELETE FROM equipos")
     suspend fun deleteAll()
 
